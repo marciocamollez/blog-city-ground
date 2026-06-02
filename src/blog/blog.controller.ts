@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { GetPostsUsecase } from './application/usecases/get-posts.usecase';
+import { PostPresenter } from './infra/presenters/post.presenter'
 
 @Controller('blog')
 export class BlogController {
@@ -9,6 +10,8 @@ export class BlogController {
 
   @Get('posts')
   async getPosts() {
-    return this.getPostsUsecase.execute();
+    const posts = await this.getPostsUsecase.execute();
+
+    return posts.map(PostPresenter.toHttp);
   }
 }
