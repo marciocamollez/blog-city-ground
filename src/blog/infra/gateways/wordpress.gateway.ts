@@ -17,4 +17,25 @@ export class WordpressGateway implements PostRepository{
       post.excerpt,
     ));
   }
+
+  async getPostBySlug(
+    slug: string,
+  ): Promise<PostEntity | null> {
+    const response = await axios.get(
+      `${this.baseUrl}/posts/slug:${slug}`,
+    );
+
+    const post = response.data;
+
+    if (!post || !post.ID) {
+      return null;
+    }
+
+    return new PostEntity(
+      post.ID,
+      post.title,
+      post.slug,
+      post.excerpt,
+    );
+  }
 }
