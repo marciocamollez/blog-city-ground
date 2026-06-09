@@ -1,6 +1,7 @@
 import {
   Inject,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 
 import { PostRepository }
@@ -17,6 +18,11 @@ export class GetPostBySlugUsecase {
   ) {}
 
   async execute(slug: string) {
-    return this.postRepository.getPostBySlug(slug);
+    const post = await this.postRepository.getPostBySlug(slug);
+
+    if (!post) {
+      throw new NotFoundException(`Post with slug '${slug}' not found.`);
+    }
+    return post;
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, BadRequestException } from "@nestjs/common";
 import { Inject } from "@nestjs/common";
 import { PostRepository } from "src/blog/domain/repositories/post.repository";
 import { POST_REPOSITORY } from "src/blog/domain/repositories/post-repository.token";
@@ -11,6 +11,10 @@ export class GetPostsByCategoryUsecase {
   ) {}
 
   async execute(categoryId: number) {
+    if (categoryId <= 0){
+      throw new BadRequestException("Invalid category ID");
+    }
+
     return this.repository.getPostsByCategory(categoryId);
   }
 }
