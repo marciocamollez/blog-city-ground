@@ -10,6 +10,9 @@ import { GetPostsByCategoryUsecase } from './application/usecases/get-posts-by-c
 import { PostPresenter } from './infra/presenters/post.presenter'
 import { CategoryPresenter } from './infra/presenters/category.presenter';
 
+//DTOs
+import { GetPostsByCategoryDto } from './infra/dtos/get-posts-by-category.dto';
+
 
 @Controller('blog')
 export class BlogController {
@@ -48,11 +51,11 @@ export class BlogController {
 
   @Get('categories/:id/posts')
   async getPostsByCategory(
-    @Param('id') id: string,
+    @Param() params: GetPostsByCategoryDto,
   ) {
     const posts =
       await this.getPostsByCategoryUsecase.execute(
-        Number(id),
+        params.id,
       );
 
     return posts.map(
