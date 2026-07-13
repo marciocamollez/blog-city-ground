@@ -12,7 +12,10 @@ export class GetPostsUsecase {
     private readonly postRepository: PostRepository
   ) {}
 
-  async execute() {
-    return await this.postRepository.getPosts();
+  async execute(
+    page: number,
+    perPage: number,
+  ) {
+    return await this.postRepository.getPosts(page, perPage);
   }
 }

@@ -8,8 +8,16 @@ import { CategoryEntity } from '../../domain/entities/category.entity';
 export class WordpressGateway implements PostRepository{
   private readonly baseUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/citygroundbrasil.wordpress.com';
 
-  async getPosts(): Promise<PostEntity[]> {
-    const response = await axios.get(`${this.baseUrl}/posts/`);
+  async getPosts(
+    page: number,
+    perPage: number,
+  ): Promise<PostEntity[]> {
+    const response = await axios.get(`${this.baseUrl}/posts/`, {
+      params: {
+        page,
+        per_page: perPage,
+      },
+    });
 
     return response.data.posts.map((post: any) => new PostEntity(
       post.ID,

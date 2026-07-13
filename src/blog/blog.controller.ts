@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 
 //Usecases
 import { GetPostsUsecase } from './application/usecases/get-posts.usecase';
@@ -12,6 +12,7 @@ import { CategoryPresenter } from './infra/presenters/category.presenter';
 
 //DTOs
 import { GetPostsByCategoryDto } from './infra/dtos/get-posts-by-category.dto';
+import { GetPostsDto } from './infra/dtos/get-posts.dto';
 
 
 @Controller('blog')
@@ -24,8 +25,10 @@ export class BlogController {
   ) {}
 
   @Get('posts')
-  async getPosts() {
-    const posts = await this.getPostsUsecase.execute();
+  async getPosts(
+    @Query() query: GetPostsDto
+  ) {
+    const posts = await this.getPostsUsecase.execute(query.page, query.perPage);
 
     return posts.map(PostPresenter.toHttp);
   }
