@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsInt, IsOptional, Min } from 'class-validator';
+import { IsInt, IsOptional, Min, IsString } from 'class-validator';
 
 export class GetPostsDto {
   @IsOptional()
@@ -13,4 +13,8 @@ export class GetPostsDto {
   @IsInt()
   @Min(1)
   perPage = 10;
+
+  @IsOptional()
+  @IsString()
+  search?: string;
 }

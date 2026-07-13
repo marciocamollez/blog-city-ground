@@ -28,7 +28,7 @@ export class BlogController {
   async getPosts(
     @Query() query: GetPostsDto
   ) {
-    const posts = await this.getPostsUsecase.execute(query.page, query.perPage);
+    const posts = await this.getPostsUsecase.execute(query.page, query.perPage, query.search);
 
     return posts.map(PostPresenter.toHttp);
   }

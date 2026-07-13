@@ -15,7 +15,8 @@ export class GetPostsUsecase {
   async execute(
     page: number,
     perPage: number,
+    search?: string,
   ) {
-    return await this.postRepository.getPosts(page, perPage);
+    return await this.postRepository.getPosts(page, perPage, search);
   }
 }

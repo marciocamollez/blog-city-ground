@@ -5,6 +5,7 @@ export abstract class PostRepository {
   abstract getPosts(
     page: number,
     perPage: number,
+    search?: string,
   ): Promise<any[]>;
   abstract getPostBySlug(slug: string): Promise<PostEntity | null>;
 

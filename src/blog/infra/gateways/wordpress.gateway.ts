@@ -11,11 +11,13 @@ export class WordpressGateway implements PostRepository{
   async getPosts(
     page: number,
     perPage: number,
+    search?: string,
   ): Promise<PostEntity[]> {
     const response = await axios.get(`${this.baseUrl}/posts/`, {
       params: {
         page,
         per_page: perPage,
+        search,
       },
     });
 
