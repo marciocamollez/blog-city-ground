@@ -3,10 +3,18 @@ import axios from 'axios';
 import { PostRepository } from '../../domain/repositories/post.repository';
 import { PostEntity } from '../../domain/entities/post.entity';
 import { CategoryEntity } from '../../domain/entities/category.entity';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
-  private readonly baseUrl = 'https://public-api.wordpress.com/rest/v1.1/sites/citygroundbrasil.wordpress.com';
+
+  private readonly baseUrl: string;
+
+  constructor(
+    private readonly configService: ConfigService,
+  ) {
+    this.baseUrl = this.configService.get<string>('WORDPRESS_API_URL')!;
+  }
 
   async getPosts(
     page: number,
