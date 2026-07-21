@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import axios from 'axios';
 import { PostRepository } from '../../domain/repositories/post.repository';
 import { PostEntity } from '../../domain/entities/post.entity';
 import { CategoryEntity } from '../../domain/entities/category.entity';
 import { ConfigService } from '@nestjs/config';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
@@ -12,6 +14,7 @@ export class WordpressGateway implements PostRepository{
 
   constructor(
     private readonly configService: ConfigService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     this.baseUrl = this.configService.get<string>('WORDPRESS_API_URL')!;
   }
@@ -21,6 +24,15 @@ export class WordpressGateway implements PostRepository{
     perPage: number,
     search?: string,
   ): Promise<PostEntity[]> {
+    const cacheKey = `posts-${page}-${perPage}-${search ?? ''}`; 
+    const cachedPosts =
+    await this.cacheManager.get<PostEntity[]>(
+      cacheKey,
+    );
+    if (cachedPosts) {
+      return cachedPosts;
+    }
+    console.log('Consultando WordPress...');
     const response = await axios.get(`${this.baseUrl}/posts/`, {
       params: {
         page,
@@ -29,12 +41,15 @@ export class WordpressGateway implements PostRepository{
       },
     });
 
-    return response.data.posts.map((post: any) => new PostEntity(
+    const posts = response.data.posts.map((post: any) => new PostEntity(
       post.ID,
       post.title,
       post.slug,
       post.excerpt,
     ));
+
+    await this.cacheManager.set(cacheKey, posts);
+    return posts;
   }
 
   async getPostBySlug(
