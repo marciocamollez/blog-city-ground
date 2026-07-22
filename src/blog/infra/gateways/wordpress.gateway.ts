@@ -55,8 +55,10 @@ export class WordpressGateway implements PostRepository{
       await this.cacheManager.set(cacheKey, posts);
       return posts;
     }
-    catch (error) {
-      this.logger.error('Erro ao consultar WordPress:', error);
+      catch (error) {
+        this.logger.error('Erro ao consultar WordPress:', 
+        error instanceof Error ? error.stack : undefined,
+      );
       throw new Error('Erro ao consultar WordPress');
     }
   }

@@ -51,7 +51,6 @@ export class BlogController {
 
   @Get('categories')
   @ApiOperation({ summary: 'Lista todas as categorias' })
-  @ApiParam({ name: 'name', example: 'historia' })
   async getCategories() {
     const categories =
       await this.getCategoriesUsecase.execute();
@@ -62,7 +61,6 @@ export class BlogController {
   }
 
   @ApiOperation({ summary: 'Lista posts por categoria' })
-  @ApiParam({ name: 'id', example: '1' })
   @Get('categories/:id/posts')
   async getPostsByCategory(
     @Param() params: GetPostsByCategoryDto,
