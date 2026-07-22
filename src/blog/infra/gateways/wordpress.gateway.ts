@@ -6,11 +6,13 @@ import { CategoryEntity } from '../../domain/entities/category.entity';
 import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
 
   private readonly baseUrl: string;
+  private readonly logger = new Logger(WordpressGateway.name);
 
   constructor(
     private readonly configService: ConfigService,
@@ -32,24 +34,31 @@ export class WordpressGateway implements PostRepository{
     if (cachedPosts) {
       return cachedPosts;
     }
-    console.log('Consultando WordPress...');
-    const response = await axios.get(`${this.baseUrl}/posts/`, {
-      params: {
-        page,
-        per_page: perPage,
-        search,
-      },
-    });
+    this.logger.log('Consultando WordPress...');
 
-    const posts = response.data.posts.map((post: any) => new PostEntity(
-      post.ID,
-      post.title,
-      post.slug,
-      post.excerpt,
-    ));
+    try {
+      const response = await axios.get(`${this.baseUrl}/posts/`, {
+        params: {
+          page,
+          per_page: perPage,
+          search,
+        },
+      });
 
-    await this.cacheManager.set(cacheKey, posts);
-    return posts;
+      const posts = response.data.posts.map((post: any) => new PostEntity(
+        post.ID,
+        post.title,
+        post.slug,
+        post.excerpt,
+      ));
+
+      await this.cacheManager.set(cacheKey, posts);
+      return posts;
+    }
+    catch (error) {
+      this.logger.error('Erro ao consultar WordPress:', error);
+      throw new Error('Erro ao consultar WordPress');
+    }
   }
 
   async getPostBySlug(
