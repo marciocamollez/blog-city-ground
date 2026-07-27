@@ -15,6 +15,11 @@ import { GetPostsByCategoryDto } from './infra/dtos/get-posts-by-category.dto';
 import { GetPostsDto } from './infra/dtos/get-posts.dto';
 
 import { ApiOperation, ApiQuery, ApiTags, ApiParam } from '@nestjs/swagger';
+
+import { ApiOkResponse } from '@nestjs/swagger';
+import { PostResponse } from './infra/responses/post.response';
+import { CategoryResponse } from './infra/responses/category.response';
+
 @ApiTags('Blog')
 @Controller('blog')
 export class BlogController {
@@ -25,6 +30,10 @@ export class BlogController {
     private readonly getPostsByCategoryUsecase: GetPostsByCategoryUsecase,
   ) {}
 
+  @ApiOkResponse({
+    type: PostResponse,
+    isArray: true,
+  })
   @Get('posts')
   @ApiOperation({ summary: 'Lista todos os posts' })
   @ApiQuery({ name: 'page', required: false, example: 1,})
@@ -38,6 +47,9 @@ export class BlogController {
     return posts.map(PostPresenter.toHttp);
   }
 
+  @ApiOkResponse({
+    type: PostResponse,
+  })
   @Get('posts/:slug')
   @ApiOperation({ summary: 'Busca um post pelo slug' })
   @ApiParam({ name: 'slug', example: 'a-origem-do-nottingham-forest' })
@@ -49,6 +61,10 @@ export class BlogController {
     return PostPresenter.toHttp(post);
   }
 
+  @ApiOkResponse({
+    type: CategoryResponse,
+    isArray: true,
+  })
   @Get('categories')
   @ApiOperation({ summary: 'Lista todas as categorias' })
   async getCategories() {
