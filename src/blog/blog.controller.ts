@@ -16,9 +16,11 @@ import { GetPostsDto } from './infra/dtos/get-posts.dto';
 
 import { ApiOperation, ApiQuery, ApiTags, ApiParam } from '@nestjs/swagger';
 
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiInternalServerErrorResponse, ApiNotFoundResponse } from '@nestjs/swagger';
+
 import { PostResponse } from './infra/responses/post.response';
 import { CategoryResponse } from './infra/responses/category.response';
+import { ErrorResponse } from '../common/responses/error.response';
 
 @ApiTags('Blog')
 @Controller('blog')
@@ -34,6 +36,10 @@ export class BlogController {
     type: PostResponse,
     isArray: true,
   })
+  @ApiNotFoundResponse({
+    description: 'Post não encontrado',
+    type: ErrorResponse,
+  })
   @Get('posts')
   @ApiOperation({ summary: 'Lista todos os posts' })
   @ApiQuery({ name: 'page', required: false, example: 1,})
@@ -47,8 +53,19 @@ export class BlogController {
     return posts.map(PostPresenter.toHttp);
   }
 
+  @ApiOperation({
+    summary: 'Busca um post pelo slug',
+  })
   @ApiOkResponse({
     type: PostResponse,
+  })
+  @ApiNotFoundResponse({
+    description: 'Post não encontrado',
+    type: ErrorResponse,
+  })
+  @ApiInternalServerErrorResponse({
+    description: 'Erro interno da aplicação',
+    type: ErrorResponse,
   })
   @Get('posts/:slug')
   @ApiOperation({ summary: 'Busca um post pelo slug' })
