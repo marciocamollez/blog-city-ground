@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@nestjs/common';
-import axios from 'axios';
+import { HttpService } from '@nestjs/axios';
 import { PostRepository } from '../../domain/repositories/post.repository';
 import { PostEntity } from '../../domain/entities/post.entity';
 import { CategoryEntity } from '../../domain/entities/category.entity';
@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Logger } from '@nestjs/common';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
@@ -16,6 +17,7 @@ export class WordpressGateway implements PostRepository{
 
   constructor(
     private readonly configService: ConfigService,
+    private readonly httpService: HttpService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {
     this.baseUrl = this.configService.get<string>('WORDPRESS_API_URL')!;
@@ -37,13 +39,18 @@ export class WordpressGateway implements PostRepository{
     this.logger.log('Consultando WordPress...');
 
     try {
-      const response = await axios.get(`${this.baseUrl}/posts/`, {
-        params: {
-          page,
-          per_page: perPage,
-          search,
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.baseUrl}/posts/`, 
+        {
+          params: {
+            page,
+            number: perPage,
+            search,
+          },
         },
-      });
+      )
+    );
 
       const posts = response.data.posts.map((post: any) => new PostEntity(
         post.ID,
@@ -66,8 +73,10 @@ export class WordpressGateway implements PostRepository{
   async getPostBySlug(
     slug: string,
   ): Promise<PostEntity | null> {
-    const response = await axios.get(
-      `${this.baseUrl}/posts/slug:${slug}`,
+    const response = await firstValueFrom(
+      this.httpService.get(
+        `${this.baseUrl}/posts/slug:${slug}`,
+      )
     );
 
     const post = response.data;
@@ -85,7 +94,9 @@ export class WordpressGateway implements PostRepository{
   }
 
   async getCategories(): Promise<CategoryEntity[]> {
-    const response = await axios.get(`${this.baseUrl}/categories`);
+    const response = await firstValueFrom(
+      this.httpService.get(`${this.baseUrl}/categories`)
+    );
 
     return response.data.categories.map((category: any) => new CategoryEntity(
       category.ID,
@@ -95,7 +106,9 @@ export class WordpressGateway implements PostRepository{
   }
 
   async getPostsByCategory(categoryId: number): Promise<PostEntity[]> {
-    const response = await axios.get(`${this.baseUrl}/posts/?category=${categoryId}`);
+    const response = await firstValueFrom(
+      this.httpService.get(`${this.baseUrl}/posts/?category=${categoryId}`)
+    );
 
     return response.data.posts.map((post: any) => new PostEntity(
       post.ID,
