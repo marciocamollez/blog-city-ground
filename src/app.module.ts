@@ -4,6 +4,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BlogModule } from './blog/blog.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { CacheModule } from '@nestjs/cache-manager';
       ttl: 300000,
       isGlobal: true,
     }),
-    BlogModule
+    BlogModule,
+    AuthModule
   ],
   controllers: [AppController],
   providers: [AppService],
