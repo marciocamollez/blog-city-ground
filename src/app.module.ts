@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { BlogModule } from './blog/blog.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { AuthModule } from './auth/auth.module';
+import { AdminController } from './admin/admin.controller';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { AuthModule } from './auth/auth.module';
     BlogModule,
     AuthModule
   ],
-  controllers: [AppController],
+  controllers: [AppController, AdminController],
   providers: [AppService],
 })
 export class AppModule {}
