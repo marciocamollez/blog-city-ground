@@ -4,6 +4,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class AuthService {
@@ -24,6 +25,7 @@ export class AuthService {
     const payload = {
       sub: 1,
       username: dto.username,
+      role: Role.ADMIN,
     };
 
     return {
