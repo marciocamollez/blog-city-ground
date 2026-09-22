@@ -9,6 +9,7 @@ import { GetPostsByCategoryUsecase } from './application/usecases/get-posts-by-c
 //Presenters
 import { PostPresenter } from './infra/presenters/post.presenter'
 import { CategoryPresenter } from './infra/presenters/category.presenter';
+import { PaginatedPostsPresenter } from './infra/presenters/paginated-posts.presenter';
 
 //DTOs
 import { GetPostsByCategoryDto } from './infra/dtos/get-posts-by-category.dto';
@@ -53,22 +54,11 @@ export class BlogController {
   ) {
     const result = await this.getPostsUsecase.execute(query.page, query.perPage, query.search);
 
-    return {
-      items: result.items.map(PostPresenter.toHttp),
-      meta: {
-        page: query.page,
-        perPage: query.perPage,
-        total: result.total,
-        totalPages: Math.ceil(
-          result.total / query.perPage,
-        ),
-        hasNext:
-          query.page * query.perPage <
-          result.total,
-        hasPrevious:
-          query.page > 1,
-      },
-    };
+    return PaginatedPostsPresenter.toHttp(
+      result, 
+      query.page, 
+      query.perPage
+    );
   }
 
   @ApiOperation({
