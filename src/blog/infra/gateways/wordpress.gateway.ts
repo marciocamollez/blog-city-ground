@@ -8,6 +8,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
+import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
@@ -27,10 +28,10 @@ export class WordpressGateway implements PostRepository{
     page: number,
     perPage: number,
     search?: string,
-  ): Promise<PostEntity[]> {
+  ): Promise<PaginatedResult<PostEntity>> {
     const cacheKey = `posts-${page}-${perPage}-${search ?? ''}`; 
     const cachedPosts =
-    await this.cacheManager.get<PostEntity[]>(
+    await this.cacheManager.get<PaginatedResult<PostEntity>>(
       cacheKey,
     );
     if (cachedPosts) {
@@ -59,8 +60,17 @@ export class WordpressGateway implements PostRepository{
         post.excerpt,
       ));
 
-      await this.cacheManager.set(cacheKey, posts);
-      return posts;
+      const result = {
+        items: posts,
+        total: response.data.found,
+      };
+
+      await this.cacheManager.set(
+        cacheKey,
+        result,
+      );
+
+      return result;
     }
       catch (error) {
         this.logger.error('Erro ao consultar WordPress:', 

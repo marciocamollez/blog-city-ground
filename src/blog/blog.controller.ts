@@ -51,9 +51,24 @@ export class BlogController {
   async getPosts(
     @Query() query: GetPostsDto
   ) {
-    const posts = await this.getPostsUsecase.execute(query.page, query.perPage, query.search);
+    const result = await this.getPostsUsecase.execute(query.page, query.perPage, query.search);
 
-    return posts.map(PostPresenter.toHttp);
+    return {
+      items: result.items.map(PostPresenter.toHttp),
+      meta: {
+        page: query.page,
+        perPage: query.perPage,
+        total: result.total,
+        totalPages: Math.ceil(
+          result.total / query.perPage,
+        ),
+        hasNext:
+          query.page * query.perPage <
+          result.total,
+        hasPrevious:
+          query.page > 1,
+      },
+    };
   }
 
   @ApiOperation({
