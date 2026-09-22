@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Version } from '@nestjs/common';
 
 //Usecases
 import { GetPostsUsecase } from './application/usecases/get-posts.usecase';
@@ -23,7 +23,10 @@ import { CategoryResponse } from './infra/responses/category.response';
 import { ErrorResponse } from '../common/responses/error.response';
 
 @ApiTags('Blog')
-@Controller('blog')
+@Controller({
+  path: 'blog',
+  version: '1',
+})
 export class BlogController {
   constructor(
     private readonly getPostsUsecase: GetPostsUsecase,

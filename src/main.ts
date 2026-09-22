@@ -4,10 +4,14 @@ import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
+import { VersioningType } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  
+  app.enableVersioning({
+    type: VersioningType.URI,
+  });
+
   app.useGlobalFilters(
     new HttpExceptionFilter(),
   );
