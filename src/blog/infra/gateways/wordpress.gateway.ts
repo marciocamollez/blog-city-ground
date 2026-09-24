@@ -1,4 +1,4 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { PostRepository } from '../../domain/repositories/post.repository';
 import { PostEntity } from '../../domain/entities/post.entity';
@@ -9,6 +9,7 @@ import { Cache } from 'cache-manager';
 import { Logger } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import { PaginatedResult } from '../../domain/interfaces/paginated-result.interface';
+import { BadGatewayException } from '@nestjs/common';
 
 @Injectable()
 export class WordpressGateway implements PostRepository{
@@ -73,10 +74,10 @@ export class WordpressGateway implements PostRepository{
       return result;
     }
       catch (error) {
-        this.logger.error('Erro ao consultar WordPress:', 
+        this.logger.error(`Erro ao consultar WordPress: ${this.baseUrl}`, 
         error instanceof Error ? error.stack : undefined,
       );
-      throw new Error('Erro ao consultar WordPress');
+      throw new BadGatewayException('Erro ao consultar WordPress');
     }
   }
 
@@ -92,7 +93,7 @@ export class WordpressGateway implements PostRepository{
     const post = response.data;
 
     if (!post || !post.ID) {
-      return null;
+      throw new NotFoundException('Post nao encontrado');
     }
 
     return new PostEntity(
