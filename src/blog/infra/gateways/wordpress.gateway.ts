@@ -29,8 +29,9 @@ export class WordpressGateway implements PostRepository{
     page: number,
     perPage: number,
     search?: string,
+    categorySlug?: string,
   ): Promise<PaginatedResult<PostEntity>> {
-    const cacheKey = `posts-${page}-${perPage}-${search ?? ''}`; 
+    const cacheKey = `posts-${page}-${perPage}-${search ?? ''}-${categorySlug ?? ''}`;
     const cachedPosts =
     await this.cacheManager.get<PaginatedResult<PostEntity>>(
       cacheKey,
@@ -49,6 +50,7 @@ export class WordpressGateway implements PostRepository{
             page,
             number: perPage,
             search,
+            category: categorySlug,
           },
         },
       )

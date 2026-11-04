@@ -16,7 +16,8 @@ export class GetPostsUsecase {
     page: number,
     perPage: number,
     search?: string,
+    categorySlug?: string,
   ) {
-    return await this.postRepository.getPosts(page, perPage, search);
+    return this.postRepository.getPosts(page, perPage, search, categorySlug);
   }
 }

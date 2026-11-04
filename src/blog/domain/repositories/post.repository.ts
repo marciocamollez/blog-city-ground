@@ -6,6 +6,7 @@ export abstract class PostRepository {
     page: number,
     perPage: number,
     search?: string,
+    categorySlug?: string,
   ): Promise<PaginatedResult<PostEntity>>;
   abstract getPostBySlug(slug: string): Promise<PostEntity | null>;
 

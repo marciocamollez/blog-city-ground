@@ -49,10 +49,11 @@ export class BlogController {
   @ApiQuery({ name: 'page', required: false, example: 1,})
   @ApiQuery({ name: 'perPage', required: false, example: 10 })
   @ApiQuery({ name: 'search', required: false, example: 'forest' })
+  @ApiQuery({ name: 'categoryId', required: false, example: 5 })
   async getPosts(
     @Query() query: GetPostsDto
   ) {
-    const result = await this.getPostsUsecase.execute(query.page, query.perPage, query.search);
+    const result = await this.getPostsUsecase.execute(query.page, query.perPage, query.search, query.categoryId);
 
     return PaginatedPostsPresenter.toHttp(
       result, 
