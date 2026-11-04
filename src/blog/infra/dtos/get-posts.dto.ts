@@ -19,8 +19,6 @@ export class GetPostsDto {
   search?: string;
 
   @IsOptional()
-  @Type(() => Number)
-  @IsInt()
-  @Min(1)
+  @IsString()
   categorySlug?: string;
 }
