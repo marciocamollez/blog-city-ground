@@ -56,16 +56,30 @@ export class WordpressGateway implements PostRepository{
       )
     );
 
-      const posts = response.data.posts.map((post: any) => new PostEntity(
+      const posts = response.data.posts.map((post: any) => {
+      const categories = Object.values(post.categories ?? {}).map(
+        (category: any) =>
+          new CategoryEntity(
+            category.ID,
+            category.name,
+            category.slug,
+          ),
+      );
+
+      const featuredImage =
+        post.featured_image || post.post_thumbnail?.URL || null;
+
+      return new PostEntity(
         post.ID,
         post.title,
         post.slug,
         post.excerpt,
         '',
         post.date,
-        post.featured_image || null,
-        [],
-      ));
+        featuredImage,
+        categories,
+      );
+    });
 
       const result = {
         items: posts,
