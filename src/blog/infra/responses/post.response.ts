@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CategoryResponse } from './category.response';
 
 export class PostResponse {
   @ApiProperty({
@@ -21,4 +22,16 @@ export class PostResponse {
     example: 'Primeiro clube campeão inglês...',
   })
   excerpt: string;
+
+  @ApiProperty()
+  content: string;
+
+  @ApiProperty()
+  date: string;
+
+  @ApiProperty({ nullable: true })
+  featuredImage: string | null;
+
+  @ApiProperty({ type: () => CategoryResponse, isArray: true })
+  categories: CategoryResponse[];
 }

@@ -61,6 +61,10 @@ export class WordpressGateway implements PostRepository{
         post.title,
         post.slug,
         post.excerpt,
+        '',
+        post.date,
+        post.featured_image || null,
+        [],
       ));
 
       const result = {
@@ -98,11 +102,26 @@ export class WordpressGateway implements PostRepository{
       throw new NotFoundException('Post nao encontrado');
     }
 
+    const categories = Object.values(post.categories ?? {}).map(
+      (category: any) =>
+        new CategoryEntity(
+          category.ID,
+          category.name,
+          category.slug,
+        ),
+    );
+
+    const featuredImage = post.featured_image || post.post_thumbnail?.URL || null
+
     return new PostEntity(
       post.ID,
       post.title,
       post.slug,
       post.excerpt,
+      post.content,
+      post.date,
+      featuredImage,
+      categories,
     );
   }
 
@@ -128,6 +147,10 @@ export class WordpressGateway implements PostRepository{
       post.title,
       post.slug,
       post.excerpt,
+      '',
+      post.date,
+      post.featured_image || null,
+      [],
     ));
   }
 }
